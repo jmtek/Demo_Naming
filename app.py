@@ -93,7 +93,7 @@ def agent_handle(input:str):
         st.session_state.error = f"agent返回的内容无效：{json_result}"
 
 def get_agent_prompt(input):
-    today = datetime.date.today
+    today = datetime.date.today()
     prompt = (
         "作为LLM，利用您的优势完成对输入文字的分析任务，以下是输入文字：\n"
         f"'''{input}'''"
