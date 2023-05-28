@@ -30,6 +30,7 @@ def agent_handle(input:str):
     st.session_state.agentreply = ""
 
     json_result = llm_agent(get_agent_prompt(input))
+    logging.info(json_result)
     try:
         result = json.loads(json_result)
 
