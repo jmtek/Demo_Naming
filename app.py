@@ -25,23 +25,28 @@ llm_agent.max_tokens = 1000
 llm_naming = OpenAI(temperature=.7, openai_api_key=openai_api_key)
 llm_naming.max_tokens = 1000
 
-def agent_handle(input):
+def agent_handle(input:str):
+    st.session_state.error = ""
+    st.session_state.agentreply = ""
+
     json_result = llm_agent(get_agent_prompt(input))
     try:
         result = json.loads(json_result)
 
         if result["起名"] != "是":
-            return "抱歉，您的问题跟起名无关"
+            st.session_state.error = "抱歉，您的问题跟起名无关"
+            return
         
         bday = result["生日"]
         cnzodiac = result["属相"]
         who = result["谁"]
         otherreq = result["特殊需求"]
 
-        return f"谁：{who}，生日：{bday}，属相：{cnzodiac}，具体需求：{otherreq}"
+        st.session_state.agentreply = f"谁：{who}，生日：{bday}，属相：{cnzodiac}，具体需求：{otherreq}"
 
+        return
     except Exception:
-        return f"agent返回的内容无效：{json_result}"
+        st.session_state.error = f"agent返回的内容无效：{json_result}"
 
 def get_agent_prompt(input):
     today = datetime.date.today
