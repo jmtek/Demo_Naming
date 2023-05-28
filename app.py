@@ -127,9 +127,9 @@ if st.session_state.error:
 user_input = st.text_input(label="输入你想问的话", placeholder="")
 
 st.button(
-        label="提问",
-        type="primary",
-        on_click=agent_handle,
-        kwargs={ input: user_input },
-    )
+    label="提问",
+    type="primary",
+    on_click=agent_handle,
+    kwargs={ "input": user_input },
+)
     
