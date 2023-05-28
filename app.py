@@ -64,19 +64,16 @@ def get_agent_prompt(input):
         "4. 起名的特殊要求\n"
         "\n其他上下文：\n\n"
         f"今天是{today}"
-        "\n\n请用以下的JSON格式输入，并确保回答内容可以被Python json.loads解析：\n"
+        "\n\n请用以下的JSON格式输入，并确保回答内容可以被Python json.loads解析：\n\n"
+        "{\n"
+        "\t'起名': '输入的文字是否是关于取名字的问题',\n"
+        "\t'生日': '如果提到了生日就输出，并且将生日格式化成标准日期格式，否则留空',\n"
+        "\t'属相': '如果提到了属相就输出，否则留空',\n"
+        "\t'谁': '为谁起名，如果没有提到则留空',\n"
+        "\t'特殊需求': '文字中包含的其他取名需求'\n"
+        "}"
     )
-    prompt_template = (
-        prompt_template
-        + """
-{
-	"起名": "输入的文字是否是关于取名字的问题"
-	"生日": "如果提到了生日就输出，并且将生日格式化成标准日期格式，否则留空",
-	"属相": "如果提到了属相就输出，否则留空",
-    "谁": "为谁起名，如果没有提到则留空",
-	"特殊需求": "文字中包含的其他取名需求"
-}"""
-    )
+    print(prompt_template)
     prompt = PromptTemplate(
         input_variables=["input"],
         template=prompt_template,
