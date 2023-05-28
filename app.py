@@ -77,7 +77,7 @@ def agent_handle(input:str):
                 output = output + "\n建议再补充一些信息，比如：\n" + "\n".join(unknown)
 
         st.session_state.agentreply = output
-        st.session_state.request = {
+        json_request = {
             "gender": gender,
             "bday": bday,
             "words": words,
@@ -85,6 +85,7 @@ def agent_handle(input:str):
             "cnzodiac": cnzodiac,
             "otherreq": otherreq
         }
+        st.session_state.request = json.dumps(json_request)
 
         return
     except Exception:
@@ -144,6 +145,8 @@ if "userinput" not in st.session_state:
 if "agentreply" not in st.session_state:
     st.session_state.agentreply = ""
 if "error" not in st.session_state:
+    st.session_state.error = ""
+if "request" not in st.session_state:
     st.session_state.error = ""
 
 # Force responsive layout for columns also on mobile
