@@ -73,7 +73,7 @@ def get_agent_prompt(input):
         "\t'特殊需求': '文字中包含的其他取名需求'\n"
         "}"
     )
-    print(prompt_template)
+    logging.info(prompt_template)
     prompt = PromptTemplate(
         input_variables=["input"],
         template=prompt_template,
