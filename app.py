@@ -147,7 +147,7 @@ if "agentreply" not in st.session_state:
 if "error" not in st.session_state:
     st.session_state.error = ""
 if "request" not in st.session_state:
-    st.session_state.error = ""
+    st.session_state.request = ""
 
 # Force responsive layout for columns also on mobile
 st.write(
