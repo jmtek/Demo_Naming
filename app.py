@@ -50,9 +50,9 @@ def agent_handle(input:str):
 
 def get_agent_prompt(input):
     today = datetime.date.today
-    prompt_template = (
+    prompt = (
         "作为LLM，利用您的优势完成对输入文字的分析任务，以下是输入文字：\n\n"
-        "'''{input}'''"
+        f"'''{input}'''"
         "\n\n分析的任务目标：\n\n"
         "1. 判断输入文字是否属于以下相关主题中的一个或多个\n"
         "2. 如果属于相关主题，请对内容提取核心关键字\n"
@@ -63,25 +63,23 @@ def get_agent_prompt(input):
         "3. 生肖属相\n"
         "4. 起名的特殊要求\n"
         "\n其他上下文：\n\n"
-        f"今天是{today}"
+        f"今天是{str(today)}"
         "\n\n请用以下的JSON格式输入，并确保回答内容可以被Python json.loads解析：\n"
     )
 
-    response_fomat = {
+    prompt = (
+        prompt
+        + """{
         "起名": "输入的文字是否是关于取名字的问题",
         "生日": "如果提到了生日就输出，并且将生日格式化成标准日期格式，否则留空",
         "属相": "如果提到了属相就输出，否则留空",
         "谁": "为谁起名，如果没有提到则留空",
         "特殊需求": "文字中包含的其他取名需求"
-    }
+    }""")
+
+    logging.info(prompt)
     
-    prompt_template = prompt_template + json.dumps(response_fomat, indent=4)
-    logging.info(prompt_template)
-    prompt = PromptTemplate(
-        input_variables=["input"],
-        template=prompt_template,
-    )
-    return prompt.format(input=input)
+    return prompt
 
 
 # Configure Streamlit page and state
