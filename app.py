@@ -130,6 +130,6 @@ st.button(
         label="提问",
         type="primary",
         on_click=agent_handle,
-        args=user_input,
+        kwargs={ input: user_input },
     )
     
