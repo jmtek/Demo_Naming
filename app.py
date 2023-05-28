@@ -39,10 +39,52 @@ def agent_handle(input:str):
         
         bday = result["生日"]
         cnzodiac = result["属相"]
-        who = result["谁"]
+        gender = result["性别"]
+        words = result["单双名"]
+        lastname = result["姓氏"]
         otherreq = result["特殊需求"]
 
-        st.session_state.agentreply = f"谁：{who}，生日：{bday}，属相：{cnzodiac}，具体需求：{otherreq}"
+        known = []
+        unknown = []
+        if gender != "":
+            known.append(f"你想为{gender}取名字")
+        else:
+            unknown.append("宝宝的性别")
+
+        if words != "":
+            known.append(f"你想起一个{'单名' if words=='1' else '双名'}")
+        else:
+            unknown.append("宝宝的名字是单名还是双名")
+
+        if lastname != "":
+            known.append(f"宝宝姓{lastname}")
+        else:
+            unknown.append("宝宝姓什么")
+
+        if bday != "":
+            known.append(f"宝宝的生日是{bday}")
+        else:
+            unknown.append("宝宝的生日")
+
+        if cnzodiac != "":
+            known.append(f"宝宝属{cnzodiac}")
+
+        if len(known) == 0:
+            output = "我没有get到你起名的具体要求，建议提供以下信息：\n" + "\n".join(unknown)
+        else:
+            output = "请确认你起名字的要求：\n" + "\n".join(known)
+            if len(unknown) > 0:
+                output = output + "\n建议再补充一些信息，比如：\n" + "\n".join(unknown)
+
+        st.session_state.agentreply = output
+        st.session_state.request = {
+            "gender": gender,
+            "bday": bday,
+            "words": words,
+            "lastname": lastname,
+            "cnzodiac": cnzodiac,
+            "otherreq": otherreq
+        }
 
         return
     except Exception:
@@ -58,29 +100,41 @@ def get_agent_prompt(input):
         "2. 如果属于相关主题，请对内容提取核心关键字\n"
         "3. 如果不属于任何相关主题，请回答：问题超纲\n"
         "\n相关主题：\n\n"
-        "1. 为孩子起名\n"
-        "2. 孩子的生日\n"
+        "1. 起名字\n"
+        "2. 生日\n"
         "3. 生肖属相\n"
-        "4. 起名的特殊要求\n"
+        "4. 性别\n"
+        "5. 名字包含几个字\n"
+        "6. 姓氏\n"
+        "7. 起名的特殊要求\n"
         "\n其他上下文：\n\n"
         f"今天是{str(today)}"
-        "\n\n请用以下的JSON格式输入，并确保回答内容可以被Python json.loads解析：\n"
+        "\n\n请用以下的JSON格式输入，并确保回答内容可以被Python json.loads解析："
     )
 
     prompt = (
         prompt
-        + """{
-        "起名": "输入的文字是否是关于取名字的问题",
-        "生日": "如果提到了生日就输出，并且将生日格式化成标准日期格式，否则留空",
-        "属相": "如果提到了属相就输出，否则留空",
-        "谁": "为谁起名，如果没有提到则留空",
-        "特殊需求": "文字中包含的其他取名需求"
-    }""")
+        + """
+{
+    "起名": "输入的文字是否是关于取名字的问题",
+    "生日": "如果提到了生日就输出，并且将生日格式化成标准日期格式，否则留空",
+    "属相": "如果提到了属相就输出，否则留空",
+    "姓氏": "要取的名字的姓是什么",
+    "性别": "这个名字是男孩还是女孩",
+    "单双名": "名字包含几个字",
+    "特殊需求": "文字中包含的其他取名需求"
+}
+
+json'''
+    """)
 
     logging.info(prompt)
     
     return prompt
 
+def naming_handle(input):
+    logging.info("user request: " + st.session_state.request)
+    return ""
 
 # Configure Streamlit page and state
 st.set_page_config(page_title="Demo of Naming", page_icon="🤖")
@@ -110,9 +164,6 @@ st.write(
 # Render Streamlit page
 st.title("Naming Demo")
 
-st.text_area(label="", value=st.session_state.agentreply, height=100)
-
-text_spinner_placeholder = st.empty()
 if st.session_state.error:
     st.error(st.session_state.error)
 
@@ -124,4 +175,14 @@ st.button(
     on_click=agent_handle,
     kwargs={ "input": user_input },
 )
-    
+
+st.text_area(label="", value=st.session_state.agentreply, height=100)
+if st.session_state.request:
+    st.button(
+        label="确认",
+        type="primary",
+        on_click=naming_handle,
+        kwargs={ "input": user_input },
+    )
+
+text_spinner_placeholder = st.empty()
